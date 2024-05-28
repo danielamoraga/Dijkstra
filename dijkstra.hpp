@@ -5,7 +5,7 @@
 // Algoritmo de Dijkstra
 
 // Por ahora retorna vector int porque no estoy seguro
-vector<int> dijkstra(graph G, int algorithm){
+vector<int> dijkstra(graph G, const Algorithm& algo){
 
     /* Definimos dos arreglos de tamaño |V|, distancias y previos */
     vector<int> dists;
@@ -16,8 +16,12 @@ vector<int> dijkstra(graph G, int algorithm){
     }
     
     // Definir una estructura Q
-    if (algorithm == heap) 
-    heap Q;
+    if (algo == Algorithm::heap){
+        heap Q;
+    }
+    else {
+        fibheap Q;
+    }
 
     // Definir distancia del nodo raiz como 0
     // Definir su nodo previo como -1

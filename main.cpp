@@ -50,7 +50,7 @@ int main(){
         }
     }
 
-    // Mostrar los resultados
+    // Mostrar el grafo
     cout << "Nodos (v = " << v << "):" << endl;
     for (int node : g.V) {
         cout << node << " ";
@@ -61,6 +61,9 @@ int main(){
     for (const auto& edge : g.E) {
         cout << edge.v.first << " - " << edge.v.second << " : " << edge.w << endl;
     }
+
+    // Dijstra usando Q como heap
+    
 
     return 0;
 }
