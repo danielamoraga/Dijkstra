@@ -13,11 +13,11 @@ int main(){
     vector<int> j_values = {16, 17, 18, 19, 20, 21, 22};
 
     // Elegir i y j aleatoriamente de los valores permitidos
-    int i = i_values[rand() % i_values.size()];
-    int j = j_values[rand() % j_values.size()];
+    int i = 2;
+    int j = 3;
 
-    int v = 1 << i; // Número de nodos: 2^i
-    int e = 1 << j; // Número de aristas: 2^j
+    int v = 1 << i; // Número de nodos: 2^i = 4
+    int e = 1 << j; // Número de aristas: 2^j = 8
 
     // Crear el grafo
     graph g;
@@ -25,10 +25,13 @@ int main(){
     iota(g.V.begin(), g.V.end(), 0); // Inicializar los nodos de 0 a v-1
 
     // Generar el árbol de expansión
-    for (int node = 1; node < v; ++node) {
+    for (int node = 1; node < v; node++) {
         int random_node = rand() % node;
-        g.E[node].v = {node, random_node};
-        g.E[node].w = get_random_weight();
+        g.E.resize(node);
+        edge e = edge(); // ola dani perdon le saque el "new" por mientras
+        e.v = {node, random_node};
+        e.w = get_random_weight();
+        g.E.push_back(e);
     }
 
     // Agregar las aristas restantes
@@ -37,13 +40,14 @@ int main(){
         existing_edges.insert(e.v);
         existing_edges.insert({e.v.second, e.v.first});
     }
-    int node = 1;
-    while (g.E.size() < e) {
-        int u = rand() % v;
-        int v = rand() % v;
+    int node = v;
+    
+    while (g.E.size() < e) { // ahora se queda en un loop infinito por que g.E.size() no cambia
+        int u = rand() % (v + 1); // rand() % v da entre 0 y 3 , por eso le sume + 1 a ambos
+        int v = rand() % (v + 1);
         if (u != v && existing_edges.find({u, v}) == existing_edges.end()) {
-            g.E[node].v = {u, v};
-            g.E[node].w = get_random_weight();
+            edge new_edge = { {u, v}, get_random_weight() };    
+            g.E.push_back(new_edge); // Agregar la nueva arista al grafo
             existing_edges.insert({u, v});
             existing_edges.insert({v, u});
             node++;
