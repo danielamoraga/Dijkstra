@@ -1,11 +1,40 @@
-#include "dijkstra.hpp"
 #include <random>
+
+#include "dijkstra.hpp"
+
+int TEST = 0;
+int test() {
+    graph G(5);
+    G.addEdge(0, 1, 10);
+    G.addEdge(0, 4, 5);
+    G.addEdge(1, 2, 1);
+    G.addEdge(4, 1, 3);
+    G.addEdge(4, 2, 9);
+    G.addEdge(4, 3, 2);
+    G.addEdge(2, 3, 4);
+    G.addEdge(3, 0, 7);
+
+    auto result1 = dijkstra<heap>(G, 0);
+    vector<double> dist1 = result1.first;
+    vector<double> prev1 = result1.second;
+
+    for (int i = 0; i < G.V; i++) {
+        printf("Distancia desde 0 a %d usando Heap: %f\n", i, dist1[i]);
+    }
+
+    return 0;
+}
 
 // Función para generar un número aleatorio en el rango (0..1]
 double get_random_weight() {
     return (double)rand() / RAND_MAX;
 }
-int main(){
+int main() {
+    if (TEST) {
+        test();
+        return 0;
+    }
+
     // Semilla para números aleatorios
     srand(time(0));
 
@@ -16,58 +45,52 @@ int main(){
     int i = 2;
     int j = 3;
 
-    int v = 1 << i; // Número de nodos: 2^i = 4
-    int e = 1 << j; // Número de aristas: 2^j = 8
+    int v = 1 << i;  // Número de nodos: 2^i = 4
+    int e = 1 << j;  // Número de aristas: 2^j = 8
 
     // Crear el grafo
-    graph g;
-    g.V.resize(v);
-    iota(g.V.begin(), g.V.end(), 0); // Inicializar los nodos de 0 a v-1
+    graph g(v);
+    // iota(g.V.begin(), g.V.end(), 0);  // Inicializar los nodos de 0 a v-1
 
     // Generar el árbol de expansión
     for (int node = 1; node < v; node++) {
         int random_node = rand() % node;
-        g.E.resize(node);
-        edge e = edge(); // ola dani perdon le saque el "new" por mientras
-        e.v = {node, random_node};
-        e.w = get_random_weight();
-        g.E.push_back(e);
+        g.addEdge(node, random_node, get_random_weight());
     }
 
     // Agregar las aristas restantes
     set<pair<int, int>> existing_edges;
-    for (const auto& e : g.E) {
-        existing_edges.insert(e.v);
-        existing_edges.insert({e.v.second, e.v.first});
+    for (int u = 0; u < v; ++u) {
+        for (auto& edge : g.adj[u]) {
+            int v = edge.first;
+            existing_edges.insert({min(u, v), max(u, v)});
+        }
     }
-    int node = v;
-    
-    while (g.E.size() < e) { // ahora se queda en un loop infinito por que g.E.size() no cambia
-        int u = rand() % (v + 1); // rand() % v da entre 0 y 3 , por eso le sume + 1 a ambos
-        int v = rand() % (v + 1);
-        if (u != v && existing_edges.find({u, v}) == existing_edges.end()) {
-            edge new_edge = { {u, v}, get_random_weight() };    
-            g.E.push_back(new_edge); // Agregar la nueva arista al grafo
-            existing_edges.insert({u, v});
-            existing_edges.insert({v, u});
-            node++;
+
+    while (static_cast<int>(existing_edges.size()) < e) {
+        int u = rand() % v;
+        int v = rand() % v;
+        if (u != v && !existing_edges.count({min(u, v), max(u, v)})) {
+            g.addEdge(u, v, get_random_weight());
+            existing_edges.insert({min(u, v), max(u, v)});
         }
     }
 
     // Mostrar el grafo
     cout << "Nodos (v = " << v << "):" << endl;
-    for (int node : g.V) {
+    for (int node = 0; node < v; ++node) {
         cout << node << " ";
     }
     cout << endl;
 
     cout << "Aristas (e = " << e << "):" << endl;
-    for (const auto& edge : g.E) {
-        cout << edge.v.first << " - " << edge.v.second << " : " << edge.w << endl;
+    for (int u = 0; u < v; ++u) {
+        for (auto& edge : g.adj[u]) {
+            int v = edge.first;
+            double w = edge.second;
+            cout << u << " - " << v << " : " << w << endl;
+        }
     }
-
-    // Dijstra usando Q como heap
-    
 
     return 0;
 }
