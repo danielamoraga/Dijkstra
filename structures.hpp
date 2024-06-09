@@ -1,27 +1,64 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-/* Arista */
-struct edge {
-    pair<int, int> v; // par de vertices conectados por la arista
-    int w; // peso de la arista
-};
+const double infinity = numeric_limits<double>::infinity();
+const double undefined = numeric_limits<double>::quiet_NaN();
 
 /* Grafo */
 struct graph {
-    vector<int> V; // vertices
-    vector<edge> E; // aristas con peso wi
+    int V;                                  // vertices
+    vector<vector<pair<int, double>>> adj;  // Lista de adyacencia
+
+    graph(int n) : V(n), adj(n) {}
+
+    void addEdge(int u, int v, double weight) {
+        adj[u].emplace_back(v, weight);
+    }
 };
 
 /* Heap */
 struct heap {
-    //pair< 
+    using element = pair<double, int>; // (distance, node)
+    set<element> s;
+    unordered_map<int, double> pos; // node -> distance
 
+    void insert(element e) {
+        s.insert(e);
+        pos[e.second] = e.first;
+    }
+
+    element top() {
+        return *s.begin();
+    }
+
+    void pop() {
+        pos.erase(s.begin()->second);
+        s.erase(s.begin());
+    }
+
+    void decreaseKey(double p, int u) {
+        // Primero, eliminamos el antiguo par (distancia, nodo)
+        s.erase({pos[u], u});
+        // Luego, insertamos el nuevo par (distancia, nodo)
+        s.insert({p, u});
+        // Finalmente, actualizamos la distancia en el mapa
+        pos[u] = p;
+    }
+
+    bool isEmpty() {
+        return s.empty();
+    }
 };
 
-/* Cola de Fibonacci */
-struct fibheap {
+// /* Cola de Fibonacci */
+// struct fibheap {
+//     void insert(pair<double, int> e) {}
 
-};
+//     pair<double, int> top() {}
 
-enum class Algorithm { heap, fibheap };
+//     void pop() {}
+
+//     void decreaseKey(double p, int u) {}
+
+//     bool isEmpty() {}
+// };
