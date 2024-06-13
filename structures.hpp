@@ -2,7 +2,7 @@
 using namespace std;
 
 const double infinity = numeric_limits<double>::infinity();
-const double undefined = numeric_limits<double>::quiet_NaN();
+const double undefined = numeric_limits<int>::quiet_NaN();
 
 /* Grafo */
 struct graph {
@@ -13,14 +13,15 @@ struct graph {
 
     void addEdge(int u, int v, double weight) {
         adj[u].emplace_back(v, weight);
+        adj[v].emplace_back(u, weight);
     }
 };
 
 /* Heap */
 struct heap {
-    using element = pair<double, int>; // (distance, node)
+    using element = pair<double, int>;  // (distance, node)
     set<element> s;
-    unordered_map<int, double> pos; // node -> distance
+    unordered_map<int, double> pos;  // node -> distance
 
     void insert(element e) {
         s.insert(e);
