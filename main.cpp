@@ -2,26 +2,50 @@
 
 #include "dijkstra.hpp"
 
-int TEST = 0;
-int test() {
-    graph G(5);
-    G.addEdge(0, 1, 10);
-    G.addEdge(0, 4, 5);
-    G.addEdge(1, 2, 1);
-    G.addEdge(4, 1, 3);
-    G.addEdge(4, 2, 9);
-    G.addEdge(4, 3, 2);
-    G.addEdge(2, 3, 4);
-    G.addEdge(3, 0, 7);
+int DEBUG = 1;
+int debug() {
+    int root = 0;
 
-    auto result1 = dijkstra<heap>(G, 0);
-    vector<double> dist1 = result1.first;
-    vector<double> prev1 = result1.second;
+    graph G0(5);
+    G0.addEdge(0, 1, 10);
+    G0.addEdge(0, 4, 5);
+    G0.addEdge(1, 2, 1);
+    G0.addEdge(4, 1, 3);
+    G0.addEdge(4, 2, 9);
+    G0.addEdge(4, 3, 2);
+    G0.addEdge(2, 3, 4);
+    G0.addEdge(3, 0, 7);
 
-    for (int i = 0; i < G.V; i++) {
-        printf("Distancia desde 0 a %d usando Heap: %f\n", i, dist1[i]);
+    graph G1(6);
+    G1.addEdge(0, 1, 0.2);
+    G1.addEdge(0, 2, 0.3);
+    G1.addEdge(1, 3, 0.3);
+    G1.addEdge(2, 4, 0.4);
+    G1.addEdge(3, 4, 0.5);
+    G1.addEdge(4, 5, 0.8);
+
+    graph G2(6);
+    G2.addEdge(0, 1, 1);
+    G2.addEdge(0, 3, 10);
+    G2.addEdge(1, 2, 8);
+    G2.addEdge(2, 4, 3);
+    G2.addEdge(3, 4, 1);
+    G2.addEdge(3, 5, 2);
+    G2.addEdge(5, 4, 4);
+
+    vector<graph> test_graphs = {G0, G1, G2};
+    int size = test_graphs.size();
+
+    for (int i = 0; i < size; i++) {
+        auto result = dijkstra<heap>(test_graphs[i], root);
+        vector<double> dist = result.first;
+        vector<int> prev = result.second;
+
+        printf("-- Grafo %d --\n", i);
+        for (int k = 0; k < test_graphs[i].V; k++) {
+            printf("Distancia desde %d a %d usando Heap:, %f\n", root, k, dist[k]);
+        }
     }
-
     return 0;
 }
 
@@ -30,8 +54,8 @@ double get_random_weight() {
     return (double)rand() / RAND_MAX;
 }
 int main() {
-    if (TEST) {
-        test();
+    if (DEBUG) {
+        debug();
         return 0;
     }
 
