@@ -62,8 +62,7 @@ struct heap
 /* Árbol binomial */
 struct bintree
 {
-    s
-}
+};
 
 /* Cola de Fibonacci */
 struct fibheap
