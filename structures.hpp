@@ -5,39 +5,46 @@ const double infinity = numeric_limits<double>::infinity();
 const double undefined = numeric_limits<int>::quiet_NaN();
 
 /* Grafo */
-struct graph {
-    int V;                                  // vertices
-    vector<vector<pair<int, double>>> adj;  // Lista de adyacencia
+struct graph
+{
+    int V;                                 // vertices
+    vector<vector<pair<int, double>>> adj; // Lista de adyacencia
 
     graph(int n) : V(n), adj(n) {}
 
-    void addEdge(int u, int v, double weight) {
+    void addEdge(int u, int v, double weight)
+    {
         adj[u].emplace_back(v, weight);
         adj[v].emplace_back(u, weight);
     }
 };
 
 /* Heap */
-struct heap {
-    using element = pair<double, int>;  // (distance, node)
+struct heap
+{
+    using element = pair<double, int>; // (distance, node)
     set<element> s;
-    unordered_map<int, double> pos;  // node -> distance
+    unordered_map<int, double> pos; // node -> distance
 
-    void insert(element e) {
+    void insert(element e)
+    {
         s.insert(e);
         pos[e.second] = e.first;
     }
 
-    element top() {
+    element find()
+    {
         return *s.begin();
     }
 
-    void pop() {
+    void extract()
+    {
         pos.erase(s.begin()->second);
         s.erase(s.begin());
     }
 
-    void decreaseKey(double p, int u) {
+    void decreaseKey(double p, int u)
+    {
         // Primero, eliminamos el antiguo par (distancia, nodo)
         s.erase({pos[u], u});
         // Luego, insertamos el nuevo par (distancia, nodo)
@@ -46,20 +53,36 @@ struct heap {
         pos[u] = p;
     }
 
-    bool isEmpty() {
+    bool isEmpty()
+    {
         return s.empty();
     }
 };
 
-// /* Cola de Fibonacci */
-// struct fibheap {
-//     void insert(pair<double, int> e) {}
+/* Árbol binomial */
+struct bintree
+{
+    s
+}
 
-//     pair<double, int> top() {}
+/* Cola de Fibonacci */
+struct fibheap
+{
+    int min;
 
-//     void pop() {}
+    void insert(pair<double, int> e)
+    {
+    }
 
-//     void decreaseKey(double p, int u) {}
+    pair<double, int> find()
+    {
+    }
 
-//     bool isEmpty() {}
-// };
+    void extract()
+    {
+    }
+
+    void decreaseKey(double p, int u) {}
+
+    bool isEmpty() {}
+};

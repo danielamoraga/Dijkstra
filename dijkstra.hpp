@@ -2,7 +2,8 @@
 
 // Algoritmo de Dijkstra
 template <typename Structure>
-pair<vector<double>, vector<int>> dijkstra(graph G, int root) {
+pair<vector<double>, vector<int>> dijkstra(graph G, int root)
+{
     int n = G.V;
 
     // 1. Definimos dos arreglos de tamaño |V|, distancias y previos
@@ -22,9 +23,11 @@ pair<vector<double>, vector<int>> dijkstra(graph G, int root) {
     Q.insert({0, root});
 
     // 4. Por cada nodo v
-    for (int v = 0; v < n; v++) {
+    for (int v = 0; v < n; v++)
+    {
         // distinto de la raíz en el grafo
-        if (v != root) {
+        if (v != root)
+        {
             // Definimos distancias[v] como infinita
             dist[v] = infinity;
 
@@ -37,21 +40,24 @@ pair<vector<double>, vector<int>> dijkstra(graph G, int root) {
     }
 
     // 6. Mientras Q no se encuentre vacío, repetimos:
-    while (!Q.isEmpty()) {
+    while (!Q.isEmpty())
+    {
         // Obtenemos el par (d, v) con menor distancia en Q
-        pair<double, int> dv = Q.top();
+        pair<double, int> dv = Q.find();
         // lo eliminamos
-        Q.pop();
+        Q.extract();
 
         int v = dv.second;
         // Por cada vecino u del nodo v:
-        for (pair<int, double> nu : G.adj[v]) {
-            int u = nu.first;       // vecino u
-            double wu = nu.second;  // peso de la arista (u, v)
+        for (pair<int, double> nu : G.adj[v])
+        {
+            int u = nu.first;      // vecino u
+            double wu = nu.second; // peso de la arista (u, v)
             // Si la distancia guardada para u (distancias[u]) es mayor a la distancia guardada para v (distancias[v])
             // más el peso de la arista (u, v)
             double p = dist[v] + wu;
-            if (dist[u] > p) {
+            if (dist[u] > p)
+            {
                 // actualizamos el valor de la distancia de u
                 dist[u] = p;
                 // guardamos v como el nodo previo de u
