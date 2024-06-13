@@ -2,11 +2,12 @@
 
 // Algoritmo de Dijkstra
 template <typename Structure>
-pair<vector<double>, vector<double>> dijkstra(graph G, int root) {
+pair<vector<double>, vector<int>> dijkstra(graph G, int root) {
     int n = G.V;
 
     // 1. Definimos dos arreglos de tamaño |V|, distancias y previos
-    vector<double> dist(n), prev(n);
+    vector<double> dist(n);
+    vector<int> prev(n);
 
     // 2. Definir estructura Q
     Structure Q;
