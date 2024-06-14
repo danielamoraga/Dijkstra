@@ -49,72 +49,80 @@ int debug() {
     return 0;
 }
 
-// Función para generar un número aleatorio en el rango (0..1]
-double get_random_weight() {
-    return (double)rand() / RAND_MAX;
-}
 int main() {
     if (DEBUG) {
         debug();
         return 0;
     }
 
-    // Semilla para números aleatorios
-    srand(time(0));
+    // Inicializar la semilla aleatoria
+    random_device rd;
+    mt19937 gen(rd());
 
     vector<int> i_values = {10, 12, 14};
     vector<int> j_values = {16, 17, 18, 19, 20, 21, 22};
 
-    // Elegir i y j aleatoriamente de los valores permitidos
-    int i = 2;
-    int j = 3;
+    // Inicializar distribuciones
+    uniform_real_distribution<> distrib_weight(1e-6, 1);                // (0, 1]
+    uniform_int_distribution<> distrib_i(0, int(i_values.size()) - 1);  // [0, 2]
+    uniform_int_distribution<> distrib_j(0, int(j_values.size()) - 1);  // [0, 3]
 
-    int v = 1 << i;  // Número de nodos: 2^i = 4
-    int e = 1 << j;  // Número de aristas: 2^j = 8
+    // Elegir i y j aleatoriamente de los valores permitidos
+    int i = i_values[distrib_i(gen)];
+    int j = j_values[distrib_j(gen)];
+
+    int v = 1 << i;  // Número de nodos
+    int e = 1 << j;  // Número de aristas
 
     // Crear el grafo
     graph g(v);
-    // iota(g.V.begin(), g.V.end(), 0);  // Inicializar los nodos de 0 a v-1
 
-    // Generar el árbol de expansión
+    // Agregar v − 1 aristas al grafo
     for (int node = 1; node < v; node++) {
-        int random_node = rand() % node;
-        g.addEdge(node, random_node, get_random_weight());
+        int random_node;
+        if (node == 1) {
+            random_node = 0;
+        } else {
+            // Distribución uniforme en el rango [1, node-1]
+            uniform_int_distribution<> distrib_node(1, node - 1);
+            random_node = distrib_node(gen);
+        }
+
+        double weight = distrib_weight(gen);
+        g.addEdge(node, random_node, weight);
     }
 
     // Agregar las aristas restantes
-    set<pair<int, int>> existing_edges;
-    for (int u = 0; u < v; ++u) {
-        for (auto& edge : g.adj[u]) {
-            int v = edge.first;
-            existing_edges.insert({min(u, v), max(u, v)});
+    int added_edges = v - 1;  // Ya se han añadido v - 1 aristas
+    while (added_edges < e) {
+        int u = uniform_int_distribution<>(0, v - 1)(gen);
+        int t = uniform_int_distribution<>(0, v - 1)(gen);
+
+        if (u != t) {
+            double weight = distrib_weight(gen);
+            g.addEdge(u, t, weight);
+            added_edges++;
         }
     }
 
-    while (static_cast<int>(existing_edges.size()) < e) {
-        int u = rand() % v;
-        int v = rand() % v;
-        if (u != v && !existing_edges.count({min(u, v), max(u, v)})) {
-            g.addEdge(u, v, get_random_weight());
-            existing_edges.insert({min(u, v), max(u, v)});
-        }
-    }
+    cout << "Número de aristas totales: " << e << endl;
+    cout << "Número de aristas agregadas: " << added_edges << endl;
 
     // Mostrar el grafo
-    cout << "Nodos (v = " << v << "):" << endl;
-    for (int node = 0; node < v; ++node) {
-        cout << node << " ";
-    }
-    cout << endl;
+    // cout << "Nodos (v = " << v << "):" << endl;
+    // for (int node = 0; node < v; ++node) {
+    //     cout << node << " ";
+    // }
+    // cout << endl;
 
-    cout << "Aristas (e = " << e << "):" << endl;
-    for (int u = 0; u < v; ++u) {
-        for (auto& edge : g.adj[u]) {
-            int v = edge.first;
-            double w = edge.second;
-            cout << u << " - " << v << " : " << w << endl;
-        }
-    }
+    // cout << "Aristas (e = " << e << "):" << endl;
+    // for (int u = 0; u < v; ++u) {
+    //     for (auto& edge : g.adj[u]) {
+    //         int v = edge.first;
+    //         double w = edge.second;
+    //         cout << u << " - " << v << " : " << w << endl;
+    //     }
+    // }
 
     return 0;
 }
