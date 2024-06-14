@@ -2,7 +2,7 @@
 using namespace std;
 
 const double infinity = numeric_limits<double>::infinity();
-const double undefined = numeric_limits<int>::quiet_NaN();
+const int undefined = numeric_limits<int>::quiet_NaN();
 
 /* Grafo */
 struct graph
