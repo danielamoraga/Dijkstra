@@ -30,6 +30,11 @@ struct heap
     {
         s.insert(e);
         pos[e.second] = e.first;
+
+        // if (s.size() > 1)
+        // {
+        //     s.first.min_element();
+        // }
     }
 
     element find()
@@ -62,16 +67,21 @@ struct heap
 /* Árbol binomial */
 struct bintree
 {
+    // int node;
 };
 
 /* Cola de Fibonacci */
 struct fibheap
 {
-    int min;
+    // double min;                        // distancia mínima, que siempre es conocida
+    // using element = pair<double, int>; // (distance, node)
+    // set<element> s;
 
-    void insert(pair<double, int> e)
-    {
-    }
+    // void insert(element e)
+    // {
+    //     s.insert(e);
+    //     pos[e.second] = e.first;
+    // }
 
     pair<double, int> find()
     {
