@@ -18,7 +18,7 @@ Node* newNode(element key) {
 }
 
 // This function merge two Binomial Trees.
-Node* mergeBinomialTrees(Node *b1, Node *b2) {
+Node* merge(Node *b1, Node *b2) {
   // Make sure b1 is smaller
   if (b1->data.first > b2->data.first)
     swap(b1, b2);
