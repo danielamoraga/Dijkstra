@@ -56,10 +56,11 @@ struct heap {
     }
 };
 
-/* Árbol binomial */
-struct bintree {
-    // int node;
-};
+// /* Árbol binomial */
+// struct node {
+//     // int node;
+//     node *child, *sibling, *parent;
+// };
 
 /* Cola de Fibonacci */
 struct fibheap {
