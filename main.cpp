@@ -1,8 +1,9 @@
 #include <random>
 
 #include "dijkstra.hpp"
+using namespace std::chrono;
 
-int DEBUG = 1;
+int DEBUG = 0;
 int debug() {
     int root = 0;
 
@@ -105,24 +106,26 @@ int main() {
         }
     }
 
-    cout << "Número de aristas totales: " << e << endl;
-    cout << "Número de aristas agregadas: " << added_edges << endl;
+    cout << "Pares (i, j) utilizados:  i: " << i << " j: " << j << endl;
+    cout << "Cantidad de aristas (e): " << e << endl;
+    cout << "Cantidad de vertices (v): " << v << endl;
 
-    // Mostrar el grafo
-    // cout << "Nodos (v = " << v << "):" << endl;
-    // for (int node = 0; node < v; ++node) {
-    //     cout << node << " ";
-    // }
-    // cout << endl;
+    cout << "Ejecutando dijkstra con Heap..." << endl;
+    auto start = high_resolution_clock::now();
+    auto heap_result = dijkstra<heap>(g, 0);
+    auto stop = high_resolution_clock::now();
+    auto heap_time = duration_cast<microseconds>(stop - start);
 
-    // cout << "Aristas (e = " << e << "):" << endl;
-    // for (int u = 0; u < v; ++u) {
-    //     for (auto& edge : g.adj[u]) {
-    //         int v = edge.first;
-    //         double w = edge.second;
-    //         cout << u << " - " << v << " : " << w << endl;
-    //     }
-    // }
+    /*
+    cout << "Ejecutando dijkstra con Colas de Fibonacci..." << endl;
+    auto start = high_resolution_clock::now();
+    auto fibheap_result = dijkstra<fibheap>(g, 0);
+    auto stop = high_resolution_clock::now();
+    auto fibheap_time = duration_cast<microseconds>(stop - start);
+    */
+
+    cout << "Tiempo que tardó con Heap: " << heap_time.count() << "μs" << endl;
+    // cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time.count() << "μs" << endl;
 
     return 0;
 }
