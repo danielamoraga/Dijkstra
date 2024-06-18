@@ -5,13 +5,14 @@ using element = pair<double, int>;
 
 struct fibheap {
     list<node*> f; // cola de fibonacci
-    element min; // mínimo siempre conocido
-    int n = static_cast<int>(f.size());
+    node* min; // mínimo siempre conocido
 
-    void update_minimum(element e) {
-        if (min == nullptr)
-        if (min.first == nullptr || min.first > e.first) {
-            min.first = e.first;
+    void update_minimum(node* n) {
+        if (min != NULL) {
+            if(n->data < min->data)
+                min = n;
+        } else {
+            min = n;
         }
     }
 
@@ -21,54 +22,57 @@ struct fibheap {
         node* B = newNode(x);
         // añadir el nuevo árbol binomial a la lista
         f.push_back(B);
-        // actializar el mínimo
-        update_minimum(x);
+        // actualizar el mínimo
+        update_minimum(B);
     }
 
     /* find: retorna el mínimo siempre conocido */
     element find() {
-        return min;
+        return min->data;
     }
 
     /* extract: recorre la lista para convertirla en un bosque binomial sumando árboles iguales iterativamente */
     void extract() {
         // eliminamos la raíz del árbol que contiene el mínimo y agregamos sus hijos a f
-        for (auto it = f.begin(); it != f.end(); it++ ) {
-            if ((*it)->data.first == min.first) {
-                node* B = (*it);
-                f.remove(*it);
-                f.push_back(B->child); // ! revisar: agrega solo un hijo?
-                //f.push_back((*it)->child->sibling); // esto agregaría al hermano del hijo
-            }
+        node* temp = min;
+        f.remove(min);
+        if (temp->child != NULL) {
+            f.push_back(temp->child);
+            if (temp->child->sibling != NULL) f.push_back(temp->child->sibling);
         }
+
         // convertimos el bosque de árboles binomiales en un bosque binomial:
         // creamos un arreglo A de ⌈log2(n)⌉ punteros donde A[k] apunta a un único Bk si existe
-        int arr_size = static_cast<int>(ceil(double(log2(n))));
+        int arr_size = static_cast<int>(ceil(log2(static_cast<double>(f.size()))));
         node* A[arr_size]; // inicialmente nulos
         // para cada Bk, si A[k] es nulo, A[k] <- Bk
         // sino, unimos Bk al árbol de A[k] en un Bk+1 y dejamos A[k] nulo
         int k = 0;
-        for (auto it = f.begin(); it != f.end(); it++) {
+        for (auto Bk = f.begin(); Bk != f.end(); Bk++) {
             if (A[k] == NULL) {
-                A[k] = *it;
-                f.remove(*it);
+                A[k] = *Bk;
             } else {
-                node* B = merge(A[k],*it);
+                node* B = merge(A[k],*Bk);
+                f.push_back(B);
                 A[k] == NULL;
             }
             k++;
         }
         // se tiene un bosque binomial en A y se crea una lista enlazada con sus árboles
+        f.clear();
         for (int i = 0; i < arr_size; i++) {
-            if (A[i] != NULL) f.push_back(A[i]);
+            if (A[i] != NULL)
+                f.push_back(A[i]);
         }
         // se calcula el mínimo entre las log(n) raíces
-        element new_min = {numeric_limits<double>::max(),NULL};
-        for (auto it = f.begin(); it != f.end(); it++) {
-            if ((*it)->data.first < new_min.first) {
-                new_min = (*it)->data;
+        node* new_min;
+        new_min->data = {numeric_limits<double>::max(),NULL};
+        for (auto Bk = f.begin(); Bk != f.end(); Bk++) {
+            if ((*Bk)->data.first < new_min->data.first) {
+                new_min = *Bk;
             }
         }
+        min = new_min;
     }
 
     void decreaseKey(double p, int u) {
