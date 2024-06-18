@@ -3,10 +3,7 @@
 #include "dijkstra.hpp"
 using namespace std::chrono;
 
-int DEBUG = 0;
-int debug() {
-    int root = 0;
-
+int debug(int root) {
     graph G0(5);
     G0.addEdge(0, 1, 10);
     G0.addEdge(0, 4, 5);
@@ -37,22 +34,46 @@ int debug() {
     vector<graph> test_graphs = {G0, G1, G2};
     int size = test_graphs.size();
 
+    cout << "Usando Heap: " << endl;
     for (int i = 0; i < size; i++) {
         auto result = dijkstra<heap>(test_graphs[i], root);
         vector<double> dist = result.first;
-        vector<int> prev = result.second;
 
         printf("-- Grafo %d --\n", i);
         for (int k = 0; k < test_graphs[i].V; k++) {
-            printf("Distancia desde %d a %d usando Heap:, %f\n", root, k, dist[k]);
+            printf("Distancia desde %d a %d: %f\n", root, k, dist[k]);
         }
     }
+    cout << "---------------------------------" << endl;
+
+    /*
+    cout << "Usando Colas de Fibonacci: " << endl;
+    for (int i = 0; i < size; i++) {
+        auto result = dijkstra<fibheap>(test_graphs[i], root);
+        vector<double> dist = result.first;
+
+        printf("-- Grafo %d --\n", i);
+        for (int k = 0; k < test_graphs[i].V; k++) {
+            printf("Distancia desde %d a %d: %f\n", root, k, dist[k]);
+        }
+    } */
     return 0;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
+    int DEBUG = 0; // Valor por defecto
+    int root = 0;  // Valor por defecto para root
+
+    if (argc > 1) {
+        DEBUG = std::stoi(argv[1]);
+    }
+
+    if (argc > 2) {
+        root = std::stoi(argv[2]);
+    }
+
     if (DEBUG) {
-        debug();
+        debug(root);
         return 0;
     }
 
