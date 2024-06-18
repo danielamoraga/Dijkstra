@@ -59,7 +59,7 @@ struct fibheap {
         }
         // se tiene un bosque binomial en A y se crea una lista enlazada con sus árboles
         for (int i = 0; i < arr_size; i++) {
-            f.push_back(A[i]);
+            if (A[i] != NULL) f.push_back(A[i]);
         }
         // se calcula el mínimo entre las log(n) raíces
         element new_min = {numeric_limits<double>::max(),NULL};
