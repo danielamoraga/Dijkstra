@@ -44,7 +44,7 @@ struct fibheap {
         // convertimos el bosque de árboles binomiales en un bosque binomial:
         // creamos un arreglo A de ⌈log2(n)⌉ punteros donde A[k] apunta a un único Bk si existe
         int arr_size = static_cast<int>(ceil(log2(static_cast<double>(f.size()))));
-        node* A[arr_size]; // inicialmente nulos
+        node* A[arr_size];
         // para cada Bk, si A[k] es nulo, A[k] <- Bk
         // sino, unimos Bk al árbol de A[k] en un Bk+1 y dejamos A[k] nulo
         int k = 0;
@@ -60,38 +60,34 @@ struct fibheap {
         }
         // se tiene un bosque binomial en A y se crea una lista enlazada con sus árboles
         f.clear();
+        min = NULL;
         for (int i = 0; i < arr_size; i++) {
             if (A[i] != NULL)
                 f.push_back(A[i]);
         }
         // se calcula el mínimo entre las log(n) raíces
-        node* new_min;
-        new_min->data = {numeric_limits<double>::max(),NULL};
         for (auto Bk = f.begin(); Bk != f.end(); Bk++) {
-            if ((*Bk)->data.first < new_min->data.first) {
-                new_min = *Bk;
+            if (min == NULL || (*Bk)->data.first < min->data.first) {
+                min = *Bk;
             }
         }
-        min = new_min;
     }
 
     void decreaseKey(double p, int u) {
-        // decrease the value of the node 'x' to the new chosen value.
-        ;
-        // if min-heap property is not violated, update min pointer if necessary.
+        // buscar el nodo tal que node->data.second = u
+        // cambiar su valor data.first a p
 
-        // if min-heap property is violated and parent of ‘x’ is unmarked, 
-        // cut off the link between ‘x’ and its parent.
-        // mark the parent of ‘x’.
-        // add tree rooted at ‘x’ to the root list and update min pointer if necessary.
+        // si min->data.second == u, actualizar el mínimo (buscarlo entre todas las raíces)
 
-        // if min-heap property is violated and parent of ‘x’ is marked, 
-        // cut off the link between ‘x’ and its parent p[x].
-        // add ‘x’ to the root list, updating min pointer if necessary.
-        // cut off link between p[x] and p[p[x]].
-        // add p[x] to the root list, updating min pointer if necessary.
-        // if p[p[x]] is unmarked, mark it.
-        // else, cut off p[p[x]] and repeat steps 4.2 to 4.5, taking p[p[x]] as ‘x’.
+        // si el nodo actualizado viola la condicion del minheap (ser menor que sus hijos y mayor que su padre)
+        // cortar la relación entre este y su padre
+        // marcar el padre
+        // añadir un árbol que sea solo el nodo a la lista y actualizar el mínimo si es necesario
+
+        // si el padre del nodo ya está marcado
+        // cortar la relacion entre el nodo y su padre
+        // añadir el nodo a la lista como raiz
+
     }
 
     bool isEmpty() {
