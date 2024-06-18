@@ -3,14 +3,14 @@ using namespace std;
 using element = pair<double, int>;
 
 // A Binomial Tree node.
-struct Node {
-    element data; // (distance, node)
+struct node {
+    element data; // valor del nodo, par (distance, node) del grafo
     int degree;
-    Node *child, *sibling, *parent;
+    node *child, *sibling, *parent;
 };
 
-Node* newNode(element key) {
-  Node *temp = new Node;
+node* newNode(element key) {
+  node *temp = new node;
   temp->data = key;
   temp->degree = 0;
   temp->child = temp->parent = temp->sibling = NULL;
@@ -18,7 +18,7 @@ Node* newNode(element key) {
 }
 
 // This function merge two Binomial Trees.
-Node* merge(Node *b1, Node *b2) {
+node* merge(node *b1, node *b2) {
   // Make sure b1 is smaller
   if (b1->data.first > b2->data.first)
     swap(b1, b2);

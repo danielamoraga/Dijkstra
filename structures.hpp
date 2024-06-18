@@ -62,25 +62,25 @@ struct heap {
 //     node *child, *sibling, *parent;
 // };
 
-/* Cola de Fibonacci */
-struct fibheap {
-    // double min;                        // distancia mínima, que siempre es conocida
-    // using element = pair<double, int>; // (distance, node)
-    // set<element> s;
+// /* Cola de Fibonacci */
+// struct fibheap {
+//     // double min;                        // distancia mínima, que siempre es conocida
+//     // using element = pair<double, int>; // (distance, node)
+//     // set<element> s;
 
-    // void insert(element e)
-    // {
-    //     s.insert(e);
-    //     pos[e.second] = e.first;
-    // }
+//     // void insert(element e)
+//     // {
+//     //     s.insert(e);
+//     //     pos[e.second] = e.first;
+//     // }
 
-    pair<double, int> find() {
-    }
+//     pair<double, int> find() {
+//     }
 
-    void extract() {
-    }
+//     void extract() {
+//     }
 
-    void decreaseKey(double p, int u) {}
+//     void decreaseKey(double p, int u) {}
 
-    bool isEmpty() {}
-};
+//     bool isEmpty() {}
+// };
