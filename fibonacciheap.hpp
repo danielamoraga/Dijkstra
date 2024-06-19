@@ -7,15 +7,6 @@ struct fibheap {
     list<node*> f; // cola de fibonacci
     node* min; // mínimo siempre conocido
 
-    void update_minimum(node* n) {
-        if (min != NULL) {
-            if(n->data < min->data)
-                min = n;
-        } else {
-            min = n;
-        }
-    }
-
     /* insert: Se crea un nuevo árbol binomial B_0 que contiene x y lo añade a la lista */
     void insert(element x) {
         // crear un nuevo árbol binomial
@@ -23,7 +14,12 @@ struct fibheap {
         // añadir el nuevo árbol binomial a la lista
         f.push_back(B);
         // actualizar el mínimo
-        update_minimum(B);
+        if (min != NULL) {
+            if(x < min->data)
+                min = B;
+        } else {
+            min = B;
+        }
     }
 
     /* find: retorna el mínimo siempre conocido */
@@ -73,22 +69,15 @@ struct fibheap {
         }
     }
 
-    void decreaseKey(double p, int u) {
-        // buscar el nodo tal que node->data.second = u
-        // cambiar su valor data.first a p
+    // void decreaseKey(double p, int u) {
+    //     auto fbeg = f.begin();
+    //     auto fend = f.end();
+    //     while (fbeg != fend) {
+    //         if ((*fbeg)->data.second == u) {
 
-        // si min->data.second == u, actualizar el mínimo (buscarlo entre todas las raíces)
-
-        // si el nodo actualizado viola la condicion del minheap (ser menor que sus hijos y mayor que su padre)
-        // cortar la relación entre este y su padre
-        // marcar el padre
-        // añadir un árbol que sea solo el nodo a la lista y actualizar el mínimo si es necesario
-
-        // si el padre del nodo ya está marcado
-        // cortar la relacion entre el nodo y su padre
-        // añadir el nodo a la lista como raiz
-
-    }
+    //         }
+    //     }
+    // }
 
     bool isEmpty() {
         return f.empty();
