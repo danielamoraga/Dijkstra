@@ -125,17 +125,16 @@ struct node {
             return res;
         }
         // calculate upper bound D(H->n) on the maxximum degree
-        int upper_bound(node* H) {
-            int n = H->n;
+        int upper_bound() {
             int D_n = floor(log_phi(n));
             return D_n;
         }
-        void consolidate(node* H) {
-            node* A[upper_bound(H)];
-            for (int i=0; i<upper_bound(H); i++) {
+        void consolidate() {
+            node* A[upper_bound()];
+            for (int i=0; i<upper_bound(); i++) {
                 A[i] = NULL;
             }
-            node* w = H->rootList;
+            node* w = rootList;
             while (w != w->right && w != w->left) {
                 node* x = w;
                 int d = x->degree;
@@ -143,24 +142,24 @@ struct node {
                     node* y = A[d];
                     if (x->key.first > y->key.first)
                         swap(x,y);
-                    fibheaplink(H,y,x);
+                    fibheaplink(this,y,x);
                     A[d] = NULL;
                     d++;
                     w = w->right;
                 }
                 A[d] = x;
             }
-            H->min = NULL;
-            for (int i=0; i>upper_bound(H); i++) {
+            min = NULL;
+            for (int i=0; i>upper_bound(); i++) {
                 if (A[i] != NULL) {
-                    if (H->min == NULL) {
-                        H->rootList = createList();
-                        insertList(H->rootList, A[i]);
-                        H->min = A[i];
+                    if (min == NULL) {
+                        rootList = createList();
+                        insertList(rootList, A[i]);
+                        min = A[i];
                     } else {
-                        insertList(H->rootList, A[i]);
-                        if (A[i]->key.first < H->min->key.first)
-                            H->min = A[i];
+                        insertList(rootList, A[i]);
+                        if (A[i]->key.first < min->key.first)
+                            min = A[i];
                     }
                 }
             }
@@ -182,69 +181,70 @@ struct node {
                 }
             }
         }
-        void deletion(node* H, node* x) {
-            decreaseKey(H,x,-INFINITY);
-            extract(H);
-        }
+        // void deletion(node* x) {
+        //     decreaseKey(x,-INFINITY);
+        //     extract();
+        // }
 
     public:
         // inserting a node
-        void insert(node* H, element e) {
+        void insert(element e) {
             node* x = new node();
             x->key = e;
             x->degree = 0;
             x->p = NULL;
             x->child = NULL;
             x->mark = false;
-            if (H->min == NULL) {
-                H->rootList = x;
-                H->min = x;
+            if (min == NULL) {
+                rootList = x;
+                min = x;
             } else {
-                insertList(H->rootList, x);
-                if (x->key.first < H->min->key.first)
-                    H->min = x;
+                insertList(rootList, x);
+                if (x->key.first < min->key.first)
+                    min = x;
             }
-            H->n = H->n + 1;
+            n++;
         }
 
         // find minimum
-        element find(node* H) {
-            return H->min->key;
+        element find() {
+            return min->key;
         }
 
         // extract min
-        node* extract(node* H) {
-            node* z = H->min;
+        void extract() {
+            node* z = min;
             if (z != NULL) {
                 node* x = z->child;
                 while (x != x->right && x!= x->left) { // for each child x of z
-                    insertList(H->rootList, x); // add x to the root list of H
+                    insertList(rootList, x); // add x to the root list of H
                     x->p = NULL;
                     x = x->right;
                 }
-                removeList(H->rootList,z); // remove z from the root list of H
+                removeList(rootList, z); // remove z from the root list of H
                 if (z == z->right)
-                    H->min = NULL;
+                    min = NULL;
                 else {
-                    H->min = z->right;
-                    consolidate(H);
+                    min = z->right;
+                    consolidate();
                 }
-                H->n = H->n - 1;
+                n--;
             }
-            return z;
+            return;
         }
 
-        void decreaseKey(node* H, node* x, double k) {
-            if (k > x->key.first)
-                cout << "new key is greater than current key" << endl;
-            x->key.first = k;
-            node* y = x->p;
-            if (y != NULL && x->key.first < y->key.first)
-                cut(H,x,y);
-                cascading_cut(H,y);
-            if (x->key.first < H->min->key.first)
-                H->min = x;
-        }
+        // void decreaseKey(double p, int u)
+        // void decreaseKey(node* x, double p, int u) {
+        //     if (p > x->key.first)
+        //         cout << "new key is greater than current key" << endl;
+        //     x->key.first = p;
+        //     node* y = x->p;
+        //     if (y != NULL && x->key.first < y->key.first)
+        //         cut(this,x,y);
+        //         cascading_cut(this,y);
+        //     if (x->key.first < min->key.first)
+        //         min = x;
+        // }
 
         bool isEmpty() {
             if (n = 0) return true;
