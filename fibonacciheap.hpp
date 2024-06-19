@@ -19,9 +19,6 @@ struct node {
     node* min; // pointer to the root of a tree containing the minimum key
     int n; // number of nodes
     node* rootList; // circular doubly linked list of all tree roots in the heap
-    node* min; // pointer to the root of a tree containing the minimum key
-    int n; // number of nodes
-    node* rootList; // circular doubly linked list of all tree roots in the heap
 
     node() {min = NULL; n = 0; rootList = NULL;}
 
@@ -153,7 +150,7 @@ struct node {
             for (int i=0; i>upper_bound(); i++) {
                 if (A[i] != NULL) {
                     if (min == NULL) {
-                        rootList = createList();
+                        rootList->createList(); // convierte root list en una lista vacía
                         insertList(rootList, A[i]);
                         min = A[i];
                     } else {
@@ -235,8 +232,6 @@ struct node {
 
         // void decreaseKey(double p, int u)
         // void decreaseKey(node* x, double p, int u) {
-        //     if (p > x->key.first)
-        //         cout << "new key is greater than current key" << endl;
         //     x->key.first = p;
         //     node* y = x->p;
         //     if (y != NULL && x->key.first < y->key.first)
@@ -244,6 +239,18 @@ struct node {
         //         cascading_cut(this,y);
         //     if (x->key.first < min->key.first)
         //         min = x;
+        // }
+
+        // node* find_x(int x) {
+        //     if (this->key.second == x) return this; // si fibheap es un solo nodo
+        //     else {
+        //         node* curr = 
+        //     }
+        //     node* curr = this->right;
+        //     while (curr != this) {
+        //         if (curr->key.second == x) return curr;
+        //         curr = curr->right;
+        //     }
         // }
 
         bool isEmpty() {
