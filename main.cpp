@@ -46,17 +46,17 @@ int debug(int root) {
     }
     cout << "---------------------------------" << endl;
 
-    /*
+
     cout << "Usando Colas de Fibonacci: " << endl;
     for (int i = 0; i < size; i++) {
-        auto result = dijkstra<fibheap>(test_graphs[i], root);
+        auto result = dijkstra<node>(test_graphs[i], root);
         vector<double> dist = result.first;
 
         printf("-- Grafo %d --\n", i);
         for (int k = 0; k < test_graphs[i].V; k++) {
             printf("Distancia desde %d a %d: %f\n", root, k, dist[k]);
         }
-    } */
+    }
     return 0;
 }
 
