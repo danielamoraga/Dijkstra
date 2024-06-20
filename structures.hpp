@@ -105,7 +105,7 @@ struct fibheap {
     }
     // Linking the heap nodes in parent child relationship
    private:
-    void fiblink(struct node* ptr2, struct node* ptr1) {
+    void fiblink(struct node* &ptr2, struct node* &ptr1) {
         (ptr2->left)->right = ptr2->right;
         (ptr2->right)->left = ptr2->left;
         if (ptr1->right == ptr1)
@@ -217,7 +217,7 @@ struct fibheap {
     }
     // Cutting a node in the heap to be placed in the root list
    private:
-    void cut(struct node* found, struct node* temp) {
+    void cut(struct node* &found, struct node* &temp) {
         if (found == found->right)
             temp->child = NULL;
 
@@ -238,7 +238,7 @@ struct fibheap {
     }
     // Recursive cascade cutting function
    private:
-    void cascade_cut(struct node* temp) {
+    void cascade_cut(struct node* &temp) {
         node* ptr5 = temp->parent;
         if (ptr5 != NULL) {
             if (temp->mark == 'W') {
@@ -251,7 +251,7 @@ struct fibheap {
     }
     // Function to decrease the value of a node in the heap
    private:
-    void decrease_key(struct node* found, double val) {
+    void decrease_key(struct node* &found, double val) {
         if (mini == NULL)
             cout << "The Heap is Empty" << endl;
 
@@ -267,10 +267,11 @@ struct fibheap {
         }
         if (found->key.first < mini->key.first)
             mini = found;
+        free(temp);
     }
     // Function to find the given node
    private:
-    void find(struct node* mini, int old_val, double val) {
+    void find_x(struct node* mini, int old_val, double val) {
         struct node* found = NULL;
         node* temp5 = mini;
         temp5->c = 'Y';
@@ -280,12 +281,13 @@ struct fibheap {
             temp5->c = 'N';
             found = found_ptr;
             decrease_key(found, val);
+            free(found);
         }
         if (found_ptr == NULL) {
             if (temp5->child != NULL)
-                find(temp5->child, old_val, val);
+                find_x(temp5->child, old_val, val);
             if ((temp5->right)->c != 'Y')
-                find(temp5->right, old_val, val);
+                find_x(temp5->right, old_val, val);
         }
         temp5->c = 'N';
         found = found_ptr;
@@ -293,7 +295,7 @@ struct fibheap {
     // Decreasing the distance key if node with key u
    public:
     void decreaseKey(double p, int u) {
-        find(mini, u, p);
+        find_x(mini, u, p);
     }
     // Deleting a node from the heap
    private:
@@ -302,7 +304,7 @@ struct fibheap {
             cout << "The heap is empty" << endl;
         else {
             // Decreasing the value of the node to 0
-            find(mini, val, 0);
+            find_x(mini, val, 0);
             // Calling Extract_min function to
             // delete minimum value node, which is 0
             extract();
