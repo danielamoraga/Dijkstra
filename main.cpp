@@ -31,6 +31,32 @@ int debug(int root) {
     G2.addEdge(3, 5, 2);
     G2.addEdge(5, 4, 4);
 
+
+    graph G3(16);
+    G3.addEdge(0, 1, 0.8);
+    G3.addEdge(0, 2, 0.5);
+    G3.addEdge(1, 3, 0.9);
+    G3.addEdge(1, 4, 0.6);
+    G3.addEdge(2, 5, 0.7);
+    G3.addEdge(2, 6, 0.4);
+    G3.addEdge(3, 7, 0.3);
+    G3.addEdge(3, 8, 0.2);
+    G3.addEdge(4, 9, 0.5);
+    G3.addEdge(4, 10, 0.8);
+    G3.addEdge(5, 11, 0.6);
+    G3.addEdge(5, 12, 0.3);
+    G3.addEdge(6, 13, 0.7);
+    G3.addEdge(6, 14, 0.9);
+    G3.addEdge(7, 15, 0.4);
+    G3.addEdge(8, 9, 0.6);
+    G3.addEdge(9, 10, 0.2);
+    G3.addEdge(10, 11, 0.5);
+    G3.addEdge(11, 12, 0.9);
+    G3.addEdge(12, 13, 0.8);
+    G3.addEdge(13, 14, 0.3);
+    G3.addEdge(14, 15, 0.4);
+
+
     vector<graph> test_graphs = {G0, G1, G2};
     int size = test_graphs.size();
 
@@ -56,7 +82,13 @@ int debug(int root) {
         for (int k = 0; k < test_graphs[i].V; k++) {
             printf("Distancia desde %d a %d: %f\n", root, k, dist[k]);
         }
+        cout << "---------------------------------" << endl;
+
     }
+
+    cout << "--- SPECIAL CASE ---" << endl;
+
+    auto result_sp = dijkstra<fibheap>(G3, root);
     return 0;
 }
 
