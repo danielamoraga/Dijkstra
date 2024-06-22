@@ -58,267 +58,232 @@ struct heap {
 
 // Creating a structure to represent a node in the heap
 struct node {
-    node* parent;  // Parent pointer
+    node* p;  // Parent pointer
     node* child;   // Child pointer
     node* left;    // Pointer to the node on the left
     node* right;   // Pointer to the node on the right
     element key;   // Value of the node
     int degree;    // Degree of the node
-    char mark;     // Black or white mark of the node
-    char c;        // Flag for assisting in the Find node function
+    bool mark;     // Black or white mark of the node
+    bool c;        // Flag for assisting in the Find node function
 };
 
 struct fibheap {
-    // Creating min pointer as "mini"
-    node* mini = NULL;
-    // Declare an integer for number of nodes in the heap
-    int no_of_nodes = 0;
+    node* min = NULL; // creating min pointer
+    int n = 0; // declare an integer for number of nodes in the heap
+    unordered_map<int, node*> node_map;
 
-    // Function to insert a node in heap
    public:
-    void insert(element val) {
-        struct node* new_node = new node();
-        new_node->key = val;
-        new_node->degree = 0;
-        new_node->mark = 'W';
-        new_node->c = 'N';
-        new_node->parent = NULL;
-        new_node->child = NULL;
-        new_node->left = new_node;
-        new_node->right = new_node;
-        if (mini != NULL) {
-            (mini->left)->right = new_node;
-            new_node->right = mini;
-            new_node->left = mini->left;
-            mini->left = new_node;
-            if (new_node->key.first < mini->key.first)
-                mini = new_node;
-        } else {
-            mini = new_node;
+    /* inserts element val creating a node x with that key */
+    void insert(element e) {
+        struct node* x = new node();
+        x->key = e;
+        x->degree = 0;
+        x->p = NULL;
+        x->child = NULL;
+        x->mark = false;
+        x->c = false;
+        x->left = x;
+        x->right = x;
+		if (min == NULL)
+			min = x; // create min containing just x
+        else {
+			// insert x into min
+            (min->left)->right = x;
+            x->right = min;
+            x->left = min->left;
+            min->left = x;
+            if (x->key.first < min->key.first)
+                min = x;
         }
-        no_of_nodes++;
+        node_map[e.second] = x;
+        n++;
     }
-    // Finding the minimum distance value node
    public:
+    /* returns the key of the node containing the minimum */
     element find() {
-        return mini->key;
+        return min->key;
     }
-    // Linking the heap nodes in parent child relationship
    private:
-    void fiblink(struct node* &ptr2, struct node* &ptr1) {
-        (ptr2->left)->right = ptr2->right;
-        (ptr2->right)->left = ptr2->left;
-        if (ptr1->right == ptr1)
-            mini = ptr1;
-        ptr2->left = ptr2;
-        ptr2->right = ptr2;
-        ptr2->parent = ptr1;
-        if (ptr1->child == NULL)
-            ptr1->child = ptr2;
-        ptr2->right = ptr1->child;
-        ptr2->left = (ptr1->child)->left;
-        ((ptr1->child)->left)->right = ptr2;
-        (ptr1->child)->left = ptr2;
-        if (ptr2->key.first < (ptr1->child)->key.first)
-            ptr1->child = ptr2;
-        ptr1->degree++;
+    /* new heap containing all the elements of two heaps */
+    void fiblink(struct node* y, struct node* x) {
+        node_map.erase(y->key.second);
+        node_map.erase(x->key.second);
+		// remove y from min
+        (y->left)->right = y->right;
+        (y->right)->left = y->left;
+        if (x->right == x)
+            min = x;
+		// make y a child of x
+        y->left = y;
+        y->right = y;
+        y->p = x;
+        if (x->child == NULL)
+            x->child = y;
+        y->right = x->child;
+        y->left = (x->child)->left;
+        ((x->child)->left)->right = y;
+        (x->child)->left = y;
+        if (y->key.first < (x->child)->key.first)
+            x->child = y;
+        x->degree++; // incrementing x->degree
+		y->mark = false;
+        node_map[x->key.second] = x;
+        node_map[y->key.second] = y;
     }
-    // Consolidating the heap
    private:
     void consolidate() {
-        int temp1;
-        float temp2 = (log(no_of_nodes)) / (log(2));
-        int temp3 = temp2;
-        struct node* arr[temp3 + 1];
-        for (int i = 0; i <= temp3; i++)
-            arr[i] = NULL;
-        node* ptr1 = mini;
-        node* ptr2;
-        node* ptr3;
-        node* ptr4 = ptr1;
+        node_map.erase(min->key.second);
+		float phi = (1+sqrt(5)) / 2; // golden ratio
+        int d;
+        float temp = (log(n)) / (log(phi));
+        int D = floor(temp) + 1; // upper bound
+        struct node* A[D];
+        for (int i = 0; i < D; i++)
+            A[i] = NULL;
+        node* w = min; // for each node in min list
+        node* y;
+        node* swap; // pointer to swap x and y places
+        node* x;
         do {
-            ptr4 = ptr4->right;
-            temp1 = ptr1->degree;
-            while (arr[temp1] != NULL) {
-                ptr2 = arr[temp1];
-                if (ptr1->key.first > ptr2->key.first) {
-                    ptr3 = ptr1;
-                    ptr1 = ptr2;
-                    ptr2 = ptr3;
+			x = w;
+            d = x->degree;
+            while (A[d] != NULL) {
+                y = A[d];
+				// exchange x and y places
+                if (x->key.first > y->key.first) {
+                    swap = x;
+                    x = y;
+                    y = swap;
                 }
-                if (ptr2 == mini)
-                    mini = ptr1;
-                fiblink(ptr2, ptr1);
-                if (ptr1->right == ptr1)
-                    mini = ptr1;
-                arr[temp1] = NULL;
-                temp1++;
+                if (y == min)
+                    min = x;
+                fiblink(y, x);
+                if (x->right == x)
+                    min = x;
+                A[d] = NULL;
+                d++;
             }
-            arr[temp1] = ptr1;
-            ptr1 = ptr1->right;
-        } while (ptr1 != mini);
-        mini = NULL;
-        for (int j = 0; j <= temp3; j++) {
-            if (arr[j] != NULL) {
-                arr[j]->left = arr[j];
-                arr[j]->right = arr[j];
-                if (mini != NULL) {
-                    (mini->left)->right = arr[j];
-                    arr[j]->right = mini;
-                    arr[j]->left = mini->left;
-                    mini->left = arr[j];
-                    if (arr[j]->key.first < mini->key.first)
-                        mini = arr[j];
-                } else {
-                    mini = arr[j];
+            A[d] = x;
+            w = w->right; // move on w list
+        } while (w != min); // while not first element in w list
+        min = NULL;
+        for (int i = 0; i < D; i++) {
+            if (A[i] != NULL) {
+                A[i]->left = A[i]; // make A[i] a circular list
+                A[i]->right = A[i];
+				if (min == NULL) {
+					min = A[i]; // min list just contains A[i]
+				} else {
+					// add A[i] to min list
+                    (min->left)->right = A[i];
+                    A[i]->right = min;
+                    A[i]->left = min->left;
+                    min->left = A[i];
+                    node_map[A[i]->key.second] = A[i];
+					// update min
+                    if (A[i]->key.first < min->key.first)
+                        min = A[i];
                 }
-                if (mini == NULL)
-                    mini = arr[j];
-                else if (arr[j]->key.first < mini->key.first)
-                    mini = arr[j];
             }
         }
+        node_map[min->key.second] = min;
     }
-    // Function to extract minimum node in the heap
    public:
+    /* deletes the element from heap whose key is minimum*/
     void extract() {
-        if (mini == NULL)
-            cout << "The heap is empty" << endl;
-        else {
-            node* temp = mini;
-            node* pntr;
-            pntr = temp;
-            node* x = NULL;
-            if (temp->child != NULL) {
-                x = temp->child;
-                do {
-                    pntr = x->right;
-                    (mini->left)->right = x;
-                    x->right = mini;
-                    x->left = mini->left;
-                    mini->left = x;
-                    if (x->key.first < mini->key.first)
-                        mini = x;
-                    x->parent = NULL;
-                    x = pntr;
-                } while (pntr != temp->child);
-            }
-            (temp->left)->right = temp->right;
-            (temp->right)->left = temp->left;
-            mini = temp->right;
-            if (temp == temp->right && temp->child == NULL)
-                mini = NULL;
-            else {
-                mini = temp->right;
-                consolidate();
-            }
-            no_of_nodes--;
-        }
+		node* z = min;
+		node* x;
+		x = z;
+		node* childlist = NULL; // interpetrates child list
+		if (z->child != NULL) {
+			childlist = z->child;
+			do {
+				x = childlist->right;
+				// add x to the rootlist min
+                node_map.erase(childlist->key.second);
+				(min->left)->right = childlist;
+				childlist->right = min;
+				childlist->left = min->left;
+				min->left = childlist;
+                node_map[childlist->key.second] = childlist;
+				// update min
+				if (childlist->key.first < min->key.first)
+					min = childlist;
+				childlist->p = NULL;
+				childlist = x;
+			} while (x != z->child); // while not the first element of childlist
+		}
+		// remove z from min
+		(z->left)->right = z->right;
+		(z->right)->left = z->left;
+		min = z->right;
+		if (z == z->right && z->child == NULL)
+			min = NULL;
+		else {
+			min = z->right;
+			consolidate();
+		}
+		n--;
+        node_map.erase(z->key.second);
+        delete z;
     }
-    // Cutting a node in the heap to be placed in the root list
    private:
-    void cut(struct node* &found, struct node* &temp) {
-        if (found == found->right)
-            temp->child = NULL;
-
-        (found->left)->right = found->right;
-        (found->right)->left = found->left;
-        if (found == temp->child)
-            temp->child = found->right;
-
-        temp->degree = temp->degree - 1;
-        found->right = found;
-        found->left = found;
-        (mini->left)->right = found;
-        found->right = mini;
-        found->left = mini->left;
-        mini->left = found;
-        found->parent = NULL;
-        found->mark = 'B';
+    void cut(struct node* x, struct node* y) {
+        node_map.erase(y->key.second);
+        node_map.erase(x->key.second);
+		// removing x from y childs
+        if (x == x->right) // if found doesn't have siblings
+            y->child = NULL; // temp doesn't have children
+		// otherwise, remove x from y childlist
+        (x->left)->right = x->right;
+        (x->right)->left = x->left;
+        if (x == y->child)
+            y->child = x->right;
+        y->degree = y->degree - 1; // decrementing y->degree
+		// insert x in min (root list)
+        x->right = x;
+        x->left = x;
+        (min->left)->right = x;
+        x->right = min;
+        x->left = min->left;
+        min->left = x;
+        x->p = NULL;
+        x->mark = false;
+        node_map[x->key.second] = x;
+        node_map[y->key.second] = y;
     }
-    // Recursive cascade cutting function
    private:
-    void cascade_cut(struct node* &temp) {
-        node* ptr5 = temp->parent;
-        if (ptr5 != NULL) {
-            if (temp->mark == 'W') {
-                temp->mark = 'B';
+    void cascade_cut(struct node* y) {
+        node* z = y->p;
+        if (z != NULL) {
+            if (y->mark == false) {
+                y->mark = true;
             } else {
-                cut(temp, ptr5);
-                cascade_cut(ptr5);
+                cut(y, z);
+                cascade_cut(z);
             }
         }
     }
-    // Function to decrease the value of a node in the heap
-   private:
-    void decrease_key(struct node* &found, double val) {
-        if (mini == NULL)
-            cout << "The Heap is Empty" << endl;
-
-        if (found == NULL)
-            cout << "Node not found in the Heap" << endl;
-
-        found->key.first = val;
-
-        struct node* temp = found->parent;
-        if (temp != NULL && found->key.first < temp->key.first) {
-            cut(found, temp);
-            cascade_cut(temp);
-        }
-        if (found->key.first < mini->key.first)
-            mini = found;
-        free(temp);
-    }
-    // Function to find the given node
-   private:
-    void find_x(struct node* mini, int old_val, double val) {
-        struct node* found = NULL;
-        node* temp5 = mini;
-        temp5->c = 'Y';
-        node* found_ptr = NULL;
-        if (temp5->key.second == old_val) {
-            found_ptr = temp5;
-            temp5->c = 'N';
-            found = found_ptr;
-            decrease_key(found, val);
-            free(found);
-        }
-        if (found_ptr == NULL) {
-            if (temp5->child != NULL)
-                find_x(temp5->child, old_val, val);
-            if ((temp5->right)->c != 'Y')
-                find_x(temp5->right, old_val, val);
-        }
-        temp5->c = 'N';
-        found = found_ptr;
-    }
-    // Decreasing the distance key if node with key u
    public:
+    /* assigns the new key.first p to the node x, assuming is not greater than its current value */
     void decreaseKey(double p, int u) {
-        find_x(mini, u, p);
-    }
-    // Deleting a node from the heap
-   private:
-    void deletion(int val) {
-        if (mini == NULL)
-            cout << "The heap is empty" << endl;
-        else {
-            // Decreasing the value of the node to 0
-            find_x(mini, val, 0);
-            // Calling Extract_min function to
-            // delete minimum value node, which is 0
-            extract();
-            cout << "Key Deleted" << endl;
+        node* x = node_map[u];
+        x->key.first = p;
+        struct node* y = x->p;
+        if (y != NULL && x->key.first < y->key.first) {
+            cut(x, y);
+            cascade_cut(y);
         }
+        if (x->key.first < min->key.first)
+            min = x;
     }
-    // See if a fibheap is empty
    public:
+    /* determine if the fibheap is empty */
     bool isEmpty() {
-        if (mini == NULL)
+        if (min == NULL)
             return true;
         else
             return false;
     }
 };
-
-// Fuente: https://www.geeksforgeeks.org/fibonacci-heap-deletion-extract-min-and-decrease-key/
