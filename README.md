@@ -1,6 +1,6 @@
 # Dijkstra
 
-Descripción del proyecto
+Este proyecto implementa el algoritmo de Dijkstra para encontrar el camino más corto en un grafo, utilizando diferentes estructuras de datos para la optimización del algoritmo. Se incluyen implementaciones con Heap binomial, Heap de Fibonacci, y otras estructuras auxiliares.
 
 ## Requisitos
 
@@ -11,10 +11,24 @@ Descripción del proyecto
 
 Descripción de los archivos principales y su función
 
-- `dijkstra.hpp`: Este archivo contiene la implementación del algoritmo de Dijkstra para encontrar el camino más corto en un grafo. Utiliza estructuras de datos definidas en `structures.hpp` para representar el grafo y realizar los cálculos necesarios.
-- `main.cpp`: Este es el punto de entrada del programa. Incluye la lógica para generar grafos aleatorios mediante get_random_weight y ejecutar el algoritmo de Dijkstra definido en `dijkstra.hpp`. También contiene una función de depuración `debug` para imprimir los resultados del algoritmo.
-- `Makefile`: Contiene las instrucciones para compilar y ejecutar el proyecto. Define comandos como `make run` para ejecutar el experimento y `make clean` para eliminar los archivos generados durante la compilación, facilitando la gestión del ciclo de vida del software.
-- `structures.hpp`: Define las estructuras de datos esenciales para el proyecto, como `graph`, `heap`, `bintree`, y `fibheap`. `graph` es particularmente importante, ya que representa el grafo sobre el cual se ejecuta el algoritmo de Dijkstra, incluyendo métodos para agregar aristas y almacenar la lista de adyacencia.
+- `README.md`: Proporciona una visión general del proyecto, requisitos, instrucciones de compilación y ejecución, y la descripción de la estructura del proyecto.
+- `Makefile`: Contiene las instrucciones para compilar y ejecutar el proyecto. Define comandos como `make run` para ejecutar el experimento y `make clean` para eliminar los archivos generados durante la compilación.
+- `main.cpp`: Punto de entrada del programa. Genera grafos aleatorios, ejecuta el algoritmo de Dijkstra y contiene la función `debug` para imprimir los resultados.
+- `dijkstra.hpp`: Implementación del algoritmo de Dijkstra. Utiliza estructuras de datos definidas en `structures.hpp`.
+- `structures.hpp`: Define las estructuras de datos esenciales como `graph`, `heap`, `bintree`, y `fibheap`.
+- `binomialtree.hpp`: Implementación del Heap Binomial.
+- `fibheap_gfg.hpp`: Una de las implementaciones del Heap de Fibonacci.
+- `fibheap_pdf.hpp`: Otra implementación del Heap de Fibonacci, con diferencias en la optimización.
+- `fibonacciheap.hpp`: Variante adicional del Heap de Fibonacci.
+
+
+## Características Principales
+
+- **Generación de Grafos Aleatorios**: El programa es capaz de generar grafos aleatorios para la evaluación del algoritmo de Dijkstra, como se muestra en [main.cpp](Dijkstra/main.cpp).
+- **Comparación de Estructuras de Datos**: Se realiza una comparación entre el uso de Heap binomial y Heap de Fibonacci para determinar cuál ofrece mejor rendimiento en términos de tiempo de ejecución.
+- **Debugging y Pruebas**: Se incluye una función de depuración (`debug`) en [main.cpp](Dijkstra/main.cpp) para facilitar la visualización de los resultados del algoritmo de Dijkstra en grafos de prueba.
+
+
 
 ## Compilación y Ejecución
 
