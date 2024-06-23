@@ -20,39 +20,68 @@ struct graph {
 
 /* Heap */
 struct heap {
-    set<element> s;
-    unordered_map<int, double> pos;  // node -> distance
+    vector<element> h;
+    unordered_map<int, int> pos;  // node -> index in vector
 
+   public:
     void insert(element e) {
-        s.insert(e);
-        pos[e.second] = e.first;
-
-        // if (s.size() > 1)
-        // {
-        //     s.first.min_element();
-        // }
+        h.push_back(e);
+        heapify();
     }
 
     element find() {
-        return *s.begin();
+        return h.front();
     }
 
     void extract() {
-        pos.erase(s.begin()->second);
-        s.erase(s.begin());
+        if (h.empty()) return;
+        pos.erase(h.front().second);
+        h.front() = h.back();
+        h.pop_back();
+        heapify();
     }
 
     void decreaseKey(double p, int u) {
-        // Primero, eliminamos el antiguo par (distancia, nodo)
-        s.erase({pos[u], u});
-        // Luego, insertamos el nuevo par (distancia, nodo)
-        s.insert({p, u});
-        // Finalmente, actualizamos la distancia en el mapa
-        pos[u] = p;
+        int index = pos[u];
+        h[index].first = p;
+        heapify();
     }
 
     bool isEmpty() {
-        return s.empty();
+        return h.empty();
+    }
+
+   private:
+    void heapify() {
+        int n = h.size();
+        for (int i = n / 2 - 1; i >= 0; i--) {
+            bubbleDown(i);
+        }
+
+        // Update positions
+        for (int i = 0; i < n; ++i) {
+            pos[h[i].second] = i;
+        }
+    }
+
+    void bubbleDown(int i) {
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        int smallest = i;
+        int n = h.size();
+
+        if (left < n && h[left] < h[smallest]) {
+            smallest = left;
+        }
+        if (right < n && h[right] < h[smallest]) {
+            smallest = right;
+        }
+        if (smallest != i) {
+            swap(h[i], h[smallest]);
+            pos[h[i].second] = i;
+            pos[h[smallest].second] = smallest;
+            bubbleDown(smallest);
+        }
     }
 };
 
