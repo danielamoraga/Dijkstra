@@ -1,4 +1,5 @@
 #include <random>
+#include <fstream>
 
 #include "dijkstra.hpp"
 using namespace std::chrono;
@@ -114,6 +115,9 @@ int main(int argc, char *argv[])
         return 0;
     }
 
+    std::ofstream outfile("resultados.txt"); // Archivo de salida
+    outfile << "cantidad_vertices, cantidad_aristas, tiempo_heap, tiempo_fibheap" << std::endl;
+
     // Inicializar la semilla aleatoria
     random_device rd;
     mt19937 gen(rd());
@@ -175,16 +179,20 @@ int main(int argc, char *argv[])
             auto heap_time_stop = high_resolution_clock::now();
             auto heap_time_total = duration_cast<microseconds>(heap_time_stop - heap_time_start);
 
-            cout << "Ejecutando dijkstra con Colas de Fibonacci..." << endl;
-            auto fibheap_time_start = high_resolution_clock::now();
-            auto fibheap_result = dijkstra<fibheap>(g, 0);
-            auto fibheap_time_stop = high_resolution_clock::now();
-            auto fibheap_time_total = duration_cast<microseconds>(fibheap_time_stop - fibheap_time_start);
+            // cout << "Ejecutando dijkstra con Colas de Fibonacci..." << endl;
+            // auto fibheap_time_start = high_resolution_clock::now();
+            // auto fibheap_result = dijkstra<fibheap>(g, 0);
+            // auto fibheap_time_stop = high_resolution_clock::now();
+            // auto fibheap_time_total = duration_cast<microseconds>(fibheap_time_stop - fibheap_time_start);
 
-            cout << "Tiempo que tardó con Heap: " << heap_time_total.count() << "μs" << endl;
-            cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time_total.count() << "μs" << endl;
+            cout << "Tiempo que tardó con Heap: " << heap_time_total.count() << " microsegundos" << endl;
+            // cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time_total.count() << " microsegundos" << endl;
+
+            // Escribir los resultados en el archivo de salida
+            outfile << v << ", " << e << ", " << heap_time_total.count() << ", " << "fibheap_time_total.count()" << std::endl;
         }
     }
 
+    outfile.close(); // Cerrar el archivo de salida
     return 0;
 }
