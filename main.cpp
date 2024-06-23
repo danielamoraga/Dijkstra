@@ -164,6 +164,7 @@ int main(int argc, char *argv[])
                     added_edges++;
                 }
             }
+            cout << "---------------------------------" << endl;
 
             cout << "Pares (i, j) utilizados:  i: " << i << " j: " << j << endl;
             cout << "Cantidad de aristas (e): " << e << endl;
@@ -184,6 +185,7 @@ int main(int argc, char *argv[])
 
             cout << "Tiempo que tardó con Heap: " << heap_time_total.count() << "ms" << endl;
             cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time_total.count() << "ms" << endl;
+
         }
     }
 
