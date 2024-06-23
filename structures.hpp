@@ -71,7 +71,7 @@ struct fibheap {
 	node* min = NULL; // creating min pointer
     int n = 0; // declare an integer for number of nodes in the heap
     unordered_map<int, node*> node_map; // map to keep pointers associated to node numbers
-	
+
 	public:
 	/* inserts element e creating a node x with that key */
     void insert(element e) {
@@ -86,7 +86,7 @@ struct fibheap {
 		if (min == NULL)
 			min = x; // create min containing just x
         else {
-			// insert x into min
+			// add x to min
             (min->left)->right = x;
             x->right = min;
             x->left = min->left;
@@ -106,10 +106,15 @@ struct fibheap {
 	/* new heap containing all the elements of two heaps */
 	void fiblink(struct node* y, struct node* x) {
 		// remove y from min
-        (y->left)->right = y->right;
-        (y->right)->left = y->left;
-        if (x->right == x)
-            min = x;
+		if (y == y->right) min = x;
+		else {
+			(y->left)->right = y->right;
+			(y->right)->left = y->left;
+			//if (x->right == x)
+			//    min = x;
+			if (min == y)
+				min = y->right;
+		}
 		// make y a child of x
         y->left = y;
         y->right = y;
@@ -175,10 +180,9 @@ struct fibheap {
                     A[i]->right = min;
                     A[i]->left = min->left;
                     min->left = A[i];
-                    node_map[A[i]->key.second] = A[i];
-					// update min
                     if (A[i]->key.first < min->key.first)
                         min = A[i];
+                    node_map[A[i]->key.second] = A[i];
                 }
 			}
 		}
@@ -188,35 +192,34 @@ struct fibheap {
 	/* deletes the element from heap whose key is minimum*/
     void extract() {
 		node* z = min;
-		node* x;
-		x = z;
-		node* childlist = NULL; // interpetrates child list
+		node* childlist;
+		childlist = z;
+		node* x = NULL; // interpetrates child list
 		if (z->child != NULL) {
-			childlist = z->child;
+			x = z->child;
 			do {
-				x = childlist->right;
+				childlist = x->right;
 				// add x to the rootlist min
-                node_map.erase(childlist->key.second);
-				(min->left)->right = childlist;
-				childlist->right = min;
-				childlist->left = min->left;
-				min->left = childlist;
-                node_map[childlist->key.second] = childlist;
-				// update min
-				if (childlist->key.first < min->key.first)
-					min = childlist;
-				childlist->p = NULL;
-				childlist = x;
-			} while (x != z->child); // while not the first element of childlist
+				(min->left)->right = x;
+				x->right = min;
+				x->left = min->left;
+				min->left = x;
+				if (x->key.first < min->key.first)
+					min = x;
+                node_map[x->key.second] = x;
+				x->p = NULL;
+				x = childlist;
+			} while (childlist != z->child); // while not the first element of childlist
 		}
 		// remove z from min
-		(z->left)->right = z->right;
-		(z->right)->left = z->left;
-		min = z->right;
-		if (z == z->right && z->child == NULL) {
-			min = NULL;
-			node_map.clear();
+		if (z == z->right) min = NULL;
+		else {
+			(z->left)->right = z->right;
+			(z->right)->left = z->left;
+			min = z->right;
 		}
+		if (z == z->right && z->child == NULL)
+			min = NULL;
 		else {
 			min = z->right;
 			consolidate();
@@ -227,21 +230,22 @@ struct fibheap {
 	private:
 	void cut(struct node* x, struct node* y) {
 		// removing x from y childs
-        if (x == x->right) // if found doesn't have siblings
-            y->child = NULL; // temp doesn't have children
-		// otherwise, remove x from y childlist
-        (x->left)->right = x->right;
-        (x->right)->left = x->left;
-        if (x == y->child)
-            y->child = x->right;
-        y->degree = y->degree - 1; // decrementing y->degree
-		// insert x in min (root list)
-        x->right = x;
-        x->left = x;
+        if (x == x->right)
+            y->child = NULL;
+        else {
+			(x->left)->right = x->right;
+			(x->right)->left = x->left;
+			if (x == y->child)
+				y->child = x->right;
+		}
+        y->degree--; // decrementing y->degree
+		// add x to min (root list)
         (min->left)->right = x;
         x->right = min;
         x->left = min->left;
         min->left = x;
+		if (x->key.first < min->key.first)
+			min = x;
         x->p = NULL;
         x->mark = false;
         node_map[x->key.second] = x;
