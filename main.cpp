@@ -1,9 +1,11 @@
 #include <random>
+#include <fstream>
 
 #include "dijkstra.hpp"
 using namespace std::chrono;
 
-int debug(int root) {
+int debug(int root)
+{
     graph G0(5);
     G0.addEdge(0, 1, 10);
     G0.addEdge(0, 4, 5);
@@ -31,7 +33,6 @@ int debug(int root) {
     G2.addEdge(3, 5, 2);
     G2.addEdge(5, 4, 4);
 
-
     graph G3(16);
     G3.addEdge(0, 1, 0.8);
     G3.addEdge(0, 2, 0.5);
@@ -56,34 +57,35 @@ int debug(int root) {
     G3.addEdge(13, 14, 0.3);
     G3.addEdge(14, 15, 0.4);
 
-
     vector<graph> test_graphs = {G0, G1, G2};
     int size = test_graphs.size();
 
     cout << "Usando Heap: " << endl;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
+    {
         auto result = dijkstra<heap>(test_graphs[i], root);
         vector<double> dist = result.first;
 
         printf("-- Grafo %d --\n", i);
-        for (int k = 0; k < test_graphs[i].V; k++) {
+        for (int k = 0; k < test_graphs[i].V; k++)
+        {
             printf("Distancia desde %d a %d: %f\n", root, k, dist[k]);
         }
     }
     cout << "---------------------------------" << endl;
 
-
     cout << "Usando Colas de Fibonacci: " << endl;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
+    {
         auto result = dijkstra<fibheap>(test_graphs[i], root);
         vector<double> dist = result.first;
 
         printf("-- Grafo %d --\n", i);
-        for (int k = 0; k < test_graphs[i].V; k++) {
+        for (int k = 0; k < test_graphs[i].V; k++)
+        {
             printf("Distancia desde %d a %d: %f\n", root, k, dist[k]);
         }
         cout << "---------------------------------" << endl;
-
     }
 
     cout << "--- SPECIAL CASE ---" << endl;
@@ -92,22 +94,29 @@ int debug(int root) {
     return 0;
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
     int DEBUG = 0; // Valor por defecto
     int root = 0;  // Valor por defecto para root
 
-    if (argc > 1) {
+    if (argc > 1)
+    {
         DEBUG = std::stoi(argv[1]);
     }
 
-    if (argc > 2) {
+    if (argc > 2)
+    {
         root = std::stoi(argv[2]);
     }
 
-    if (DEBUG) {
+    if (DEBUG)
+    {
         debug(root);
         return 0;
     }
+
+    std::ofstream outfile("resultados.txt"); // Archivo de salida
+    outfile << "cantidad_vertices, cantidad_aristas, tiempo_heap, tiempo_fibheap" << std::endl;
 
     // Inicializar la semilla aleatoria
     random_device rd;
@@ -117,67 +126,74 @@ int main(int argc, char* argv[]) {
     vector<int> j_values = {16, 17, 18, 19, 20, 21, 22};
 
     // Inicializar distribuciones
-    uniform_real_distribution<> distrib_weight(1e-6, 1);                // (0, 1]
-    uniform_int_distribution<> distrib_i(0, int(i_values.size()) - 1);  // [0, 2]
-    uniform_int_distribution<> distrib_j(0, int(j_values.size()) - 1);  // [0, 3]
+    uniform_real_distribution<> distrib_weight(1e-6, 1); // (0, 1]
 
-    // Elegir i y j aleatoriamente de los valores permitidos
-    int i = i_values[distrib_i(gen)];
-    int j = j_values[distrib_j(gen)];
+    for (int i : i_values)
+    {
+        for (int j : j_values)
+        {
+            int v = 1 << i; // Número de nodos
+            int e = 1 << j;
+            // Crear el grafo
+            graph g(v);
+            // Agregar v − 1 aristas al grafo
+            for (int node = 1; node < v; node++)
+            {
+                int random_node;
+                if (node == 1)
+                {
+                    random_node = 0;
+                }
+                else
+                {
+                    // Distribución uniforme en el rango [1, node-1]
+                    uniform_int_distribution<> distrib_node(1, node - 1);
+                    random_node = distrib_node(gen);
+                }
 
-    int v = 1 << i;  // Número de nodos
-    int e = 1 << j;  // Número de aristas
+                double weight = distrib_weight(gen);
+                g.addEdge(node, random_node, weight);
+            }
+            // Agregar las aristas restantes
+            int added_edges = v - 1; // Ya se han añadido v - 1 aristas
+            while (added_edges < e)
+            {
+                int u = uniform_int_distribution<>(0, v - 1)(gen);
+                int t = uniform_int_distribution<>(0, v - 1)(gen);
 
-    // Crear el grafo
-    graph g(v);
+                if (u != t)
+                {
+                    double weight = distrib_weight(gen);
+                    g.addEdge(u, t, weight);
+                    added_edges++;
+                }
+            }
+            cout << "---------------------------------" << endl;
 
-    // Agregar v − 1 aristas al grafo
-    for (int node = 1; node < v; node++) {
-        int random_node;
-        if (node == 1) {
-            random_node = 0;
-        } else {
-            // Distribución uniforme en el rango [1, node-1]
-            uniform_int_distribution<> distrib_node(1, node - 1);
-            random_node = distrib_node(gen);
+            cout << "Pares (i, j) utilizados:  i: " << i << " j: " << j << endl;
+            cout << "Cantidad de aristas (e): " << e << endl;
+            cout << "Cantidad de vertices (v): " << v << endl;
+
+            cout << "Ejecutando dijkstra con Heap..." << endl;
+            auto heap_time_start = high_resolution_clock::now();
+            auto heap_result = dijkstra<heap>(g, 0);
+            auto heap_time_stop = high_resolution_clock::now();
+            auto heap_time_total = duration_cast<milliseconds>(heap_time_stop - heap_time_start);
+
+            // cout << "Ejecutando dijkstra con Colas de Fibonacci..." << endl;
+            // auto fibheap_time_start = high_resolution_clock::now();
+            // auto fibheap_result = dijkstra<fibheap>(g, 0);
+            // auto fibheap_time_stop = high_resolution_clock::now();
+            // auto fibheap_time_total = duration_cast<microseconds>(fibheap_time_stop - fibheap_time_start);
+
+            cout << "Tiempo que tardó con Heap: " << heap_time_total.count() << " microsegundos" << endl;
+            // cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time_total.count() << " microsegundos" << endl;
+
+            // Escribir los resultados en el archivo de salida
+            outfile << v << ", " << e << ", " << heap_time_total.count() << ", " << "fibheap_time_total.count()" << std::endl;
         }
-
-        double weight = distrib_weight(gen);
-        g.addEdge(node, random_node, weight);
     }
 
-    // Agregar las aristas restantes
-    int added_edges = v - 1;  // Ya se han añadido v - 1 aristas
-    while (added_edges < e) {
-        int u = uniform_int_distribution<>(0, v - 1)(gen);
-        int t = uniform_int_distribution<>(0, v - 1)(gen);
-
-        if (u != t) {
-            double weight = distrib_weight(gen);
-            g.addEdge(u, t, weight);
-            added_edges++;
-        }
-    }
-
-    cout << "Pares (i, j) utilizados:  i: " << i << " j: " << j << endl;
-    cout << "Cantidad de aristas (e): " << e << endl;
-    cout << "Cantidad de vertices (v): " << v << endl;
-
-    cout << "Ejecutando dijkstra con Heap..." << endl;
-    auto heap_time_start = high_resolution_clock::now();
-    auto heap_result = dijkstra<heap>(g, 0);
-    auto heap_time_stop = high_resolution_clock::now();
-    auto heap_time_total = duration_cast<microseconds>(heap_time_stop - heap_time_start);
-
-
-    cout << "Ejecutando dijkstra con Colas de Fibonacci..." << endl;
-    auto fibheap_time_start = high_resolution_clock::now();
-    auto fibheap_result = dijkstra<fibheap>(g, 0);
-    auto fibheap_time_stop = high_resolution_clock::now();
-    auto fibheap_time_total = duration_cast<microseconds>(fibheap_time_stop - fibheap_time_start);
-
-    cout << "Tiempo que tardó con Heap: " << heap_time_total.count() << "μs" << endl;
-    cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time_total.count() << "μs" << endl;
-
+    outfile.close(); // Cerrar el archivo de salida
     return 0;
 }
