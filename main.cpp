@@ -175,6 +175,7 @@ int main(int argc, char *argv[])
             auto heap_time_stop = high_resolution_clock::now();
             auto heap_time_total = duration_cast<microseconds>(heap_time_stop - heap_time_start);
 
+
             cout << "Ejecutando dijkstra con Colas de Fibonacci..." << endl;
             auto fibheap_time_start = high_resolution_clock::now();
             auto fibheap_result = dijkstra<fibheap>(g, 0);
