@@ -4,7 +4,8 @@
 #include "dijkstra.hpp"
 using namespace std::chrono;
 
-int debug(int root) {
+int debug(int root)
+{
     graph G0(5);
     G0.addEdge(0, 1, 10);
     G0.addEdge(0, 4, 5);
@@ -60,24 +61,28 @@ int debug(int root) {
     int size = test_graphs.size();
 
     cout << "Usando Heap: " << endl;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
+    {
         auto result = dijkstra<heap>(test_graphs[i], root);
         vector<double> dist = result.first;
 
         printf("-- Grafo %d --\n", i);
-        for (int k = 0; k < test_graphs[i].V; k++) {
+        for (int k = 0; k < test_graphs[i].V; k++)
+        {
             printf("Distancia desde %d a %d: %f\n", root, k, dist[k]);
         }
     }
     cout << "---------------------------------" << endl;
 
     cout << "Usando Colas de Fibonacci: " << endl;
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++)
+    {
         auto result = dijkstra<fibheap>(test_graphs[i], root);
         vector<double> dist = result.first;
 
         printf("-- Grafo %d --\n", i);
-        for (int k = 0; k < test_graphs[i].V; k++) {
+        for (int k = 0; k < test_graphs[i].V; k++)
+        {
             printf("Distancia desde %d a %d: %f\n", root, k, dist[k]);
         }
         cout << "---------------------------------" << endl;
@@ -86,25 +91,26 @@ int debug(int root) {
     return 0;
 }
 
-int main(int argc, char *argv[]) {
-    int DEBUG = 0;  // Valor por defecto
-    int root = 0;   // Valor por defecto para root
+int main(int argc, char *argv[])
+{
+    int DEBUG = 0; // Valor por defecto
+    int root = 0;  // Valor por defecto para root
 
-    if (argc > 1) {
+    if (argc > 1)
+    {
         DEBUG = std::stoi(argv[1]);
     }
 
-    if (argc > 2) {
+    if (argc > 2)
+    {
         root = std::stoi(argv[2]);
     }
 
-    if (DEBUG) {
+    if (DEBUG)
+    {
         debug(root);
         return 0;
     }
-
-    std::ofstream outfile("resultados.txt");  // Archivo de salida
-    outfile << "cantidad_vertices, cantidad_aristas, tiempo_heap, tiempo_fibheap" << std::endl;
 
     // Inicializar la semilla aleatoria
     random_device rd;
@@ -114,22 +120,30 @@ int main(int argc, char *argv[]) {
     vector<int> j_values = {16, 17, 18, 19, 20, 21, 22};
 
     // Inicializar distribuciones
-    uniform_real_distribution<> distrib_weight(1e-6, 1);  // (0, 1]
+    uniform_real_distribution<> distrib_weight(1e-6, 1); // (0, 1]
 
-    for (int i : i_values) {
-        for (int j : j_values) {
-            std::ofstream outfile("resultados" + to_string(i) + "-" + to_string(j) + ".txt");  // Archivo de salida
-            for (int k = 0; k < 50; k++) {
-                int v = 1 << i;  // Número de nodos
+    for (int i : i_values)
+    {
+        for (int j : j_values)
+        {
+            std::ofstream outfile("resultados" + to_string(i) + "-" + to_string(j) + ".txt"); // Archivo de salida
+            outfile << "cantidad_vertices, cantidad_aristas, tiempo_heap, tiempo_fibheap" << std::endl;
+            for (int k = 0; k < 50; k++)
+            {
+                int v = 1 << i; // Número de nodos
                 int e = 1 << j;
                 // Crear el grafo
                 graph g(v);
                 // Agregar v − 1 aristas al grafo
-                for (int node = 1; node < v; node++) {
+                for (int node = 1; node < v; node++)
+                {
                     int random_node;
-                    if (node == 1) {
+                    if (node == 1)
+                    {
                         random_node = 0;
-                    } else {
+                    }
+                    else
+                    {
                         // Distribución uniforme en el rango [1, node-1]
                         uniform_int_distribution<> distrib_node(1, node - 1);
                         random_node = distrib_node(gen);
@@ -139,12 +153,14 @@ int main(int argc, char *argv[]) {
                     g.addEdge(node, random_node, weight);
                 }
                 // Agregar las aristas restantes
-                int added_edges = v - 1;  // Ya se han añadido v - 1 aristas
-                while (added_edges < e) {
+                int added_edges = v - 1; // Ya se han añadido v - 1 aristas
+                while (added_edges < e)
+                {
                     int u = uniform_int_distribution<>(0, v - 1)(gen);
                     int t = uniform_int_distribution<>(0, v - 1)(gen);
 
-                    if (u != t) {
+                    if (u != t)
+                    {
                         double weight = distrib_weight(gen);
                         g.addEdge(u, t, weight);
                         added_edges++;
@@ -172,11 +188,11 @@ int main(int argc, char *argv[]) {
                 cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time_total.count() << "μs" << endl;
 
                 // Escribir los resultados en el archivo de salida
-                outfile << v << ", " << e << ", " << heap_time_total.count() << ", " << "fibheap_time_total.count()" << std::endl;
+                outfile << v << ", " << e << ", " << heap_time_total.count() << ", " << fibheap_time_total.count() << std::endl;
             }
+            outfile.close(); // Cerrar el archivo de salida
         }
     }
 
-    outfile.close();  // Cerrar el archivo de salida
     return 0;
 }
