@@ -19,7 +19,8 @@ pair<vector<double>, vector<int>> dijkstra(graph G, int root) {
     prev[root] = -1;
 
     // Agregar el par (distancia = 0, nodo = raiz) a Q
-    Q.insert({0, root});
+    vector<element> initDistances;
+    initDistances.push_back({0, root});
 
     // 4. Por cada nodo v
     for (int v = 0; v < n; v++) {
@@ -32,14 +33,17 @@ pair<vector<double>, vector<int>> dijkstra(graph G, int root) {
             prev[v] = undefined;
 
             // Agregamos el par (distancia = ∞, nodo = v) a Q
-            Q.insert({infinity, v});
+            initDistances.push_back({infinity, v});
         }
     }
+
+    // Construir el heap utilizando heapify
+    Q.build(initDistances);
 
     // 6. Mientras Q no se encuentre vacío, repetimos:
     while (!Q.isEmpty()) {
         // Obtenemos el par (d, v) con menor distancia en Q
-        pair<double, int> dv = Q.find();
+        element dv = Q.find();
         // lo eliminamos
         Q.extract();
 

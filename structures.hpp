@@ -24,8 +24,8 @@ struct heap {
     unordered_map<int, int> pos;  // node -> index in vector
 
    public:
-    void insert(element e) {
-        h.push_back(e);
+    void build(vector<element> &array) {
+        h = array;
         heapify();
     }
 
@@ -39,13 +39,13 @@ struct heap {
         pos.erase(h.front().second);
         h.front() = h.back();
         h.pop_back();
-        heapify();
+        bubbleDown(0);
     }
 
     void decreaseKey(double p, int u) {
         int index = pos[u];
         h[index].first = p;
-        heapify();
+        bubbleUp(index);
     }
 
     bool isEmpty() {
@@ -82,6 +82,16 @@ struct heap {
             pos[h[i].second] = i;
             pos[h[smallest].second] = smallest;
             bubbleDown(smallest);
+        }
+    }
+
+    void bubbleUp(int i) {
+        while (i > 0 && h[i] < h[(i - 1) / 2]) {
+            int parent = (i - 1) / 2;
+            swap(h[i], h[parent]);
+            pos[h[i].second] = i;
+            pos[h[parent].second] = parent;
+            i = parent;
         }
     }
 };
@@ -126,6 +136,14 @@ struct fibheap {
         }
         node_map[e.second] = x;
         n++;
+    }
+
+    /* build a fibonacci tree */
+   public:
+    void build(vector<element> v) {
+        for (int i=0; i<(int)v.size(); i++) {
+            insert(v[i]);
+        }
     }
 
    public:
