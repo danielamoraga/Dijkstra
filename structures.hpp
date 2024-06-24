@@ -189,70 +189,57 @@ private:
     }
 
 private:
-    void consolidate()
-    {
-        int d;
-        // float phi = (1+sqrt(5)) / 2; // golden ratio
-        float temp = (log(n)) / (log(2));
-        int D = floor(temp) + 1; // upper bound
-        struct node *A[D];
-        for (int i = 0; i < D; i++)
-            A[i] = NULL;
-        node *x = min; // for each node in min list
-        node *y;
-        node *swap; // pointer to swap x and y places
-        node *w = x;
-        do
-        {
+void consolidate()
+{
+    int d;
+    const double phi = (1.0 + sqrt(5.0)) / 2.0; // golden ratio
+    int D = static_cast<int>(log(n) / log(phi)) + 1; // upper bound
+    std::vector<node *> A(D, nullptr); // use vector for dynamic array size
+
+    std::vector<node *> rootList;
+    node *w = min;
+    if (w != nullptr) {
+        do {
+            rootList.push_back(w);
             w = w->right;
-            d = x->degree;
-            while (A[d] != NULL)
-            {
-                y = A[d];
-                // exchange x and y places
-                if (x->key.first > y->key.first)
-                {
-                    swap = x;
-                    x = y;
-                    y = swap;
-                }
-                if (y == min)
-                    min = x;
-                fiblink(y, x);
-                if (x->right == x)
-                    min = x;
-                A[d] = NULL;
-                d++;
+        } while (w != min);
+    }
+
+    for (node *w : rootList) {
+        node *x = w;
+        d = x->degree;
+        while (A[d] != nullptr) {
+            node *y = A[d];
+            if (x->key.first > y->key.first) {
+                std::swap(x, y);
             }
-            A[d] = x;
-            x = x->right;
-        } while (x != min);
-        min = NULL;
-        for (int i = 0; i < D; i++)
-        {
-            if (A[i] != NULL)
-            {
-                A[i]->left = A[i]; // make A[i] a circular list
-                A[i]->right = A[i];
-                if (min == NULL)
-                {
-                    min = A[i]; // min list just contains A[i]
-                }
-                else
-                {
-                    // add A[i] to min list
-                    (min->left)->right = A[i];
-                    A[i]->right = min;
-                    A[i]->left = min->left;
-                    min->left = A[i];
-                    if (A[i]->key.first < min->key.first)
-                        min = A[i];
-                    node_map[A[i]->key.second] = A[i];
+            fiblink(y, x);
+            A[d] = nullptr;
+            d++;
+        }
+        A[d] = x;
+    }
+
+    min = nullptr;
+    for (node *nodePtr : A) {
+        if (nodePtr != nullptr) {
+            if (min == nullptr) {
+                min = nodePtr;
+                min->left = min;
+                min->right = min;
+            } else {
+                nodePtr->left = min->left;
+                nodePtr->right = min;
+                min->left->right = nodePtr;
+                min->left = nodePtr;
+                if (nodePtr->key.first < min->key.first) {
+                    min = nodePtr;
                 }
             }
         }
-        node_map[min->key.second] = min;
     }
+}
+
 
 public:
     /* deletes the element from heap whose key is minimum*/
