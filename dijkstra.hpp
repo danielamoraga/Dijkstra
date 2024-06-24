@@ -37,7 +37,7 @@ pair<vector<double>, vector<int>> dijkstra(graph G, int root) {
         }
     }
 
-    // Construir el heap utilizando heapify
+    // 5. Construir el heap utilizando heapify
     Q.build(initDistances);
 
     // 6. Mientras Q no se encuentre vacío, repetimos:
