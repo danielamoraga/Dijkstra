@@ -119,9 +119,7 @@ int main(int argc, char *argv[]) {
     for (int i : i_values) {
         for (int j : j_values) {
             std::ofstream outfile("resultados" + to_string(i) + "-" + to_string(j) + ".txt");  // Archivo de salida
-            for (int k = 0; k < 2; k++) {
-                // int v = i;
-                // int e = j;
+            for (int k = 0; k < 50; k++) {
                 int v = 1 << i;  // Número de nodos
                 int e = 1 << j;
                 // Crear el grafo
@@ -162,16 +160,16 @@ int main(int argc, char *argv[]) {
                 auto heap_time_start = high_resolution_clock::now();
                 auto heap_result = dijkstra<heap>(g, 0);
                 auto heap_time_stop = high_resolution_clock::now();
-                auto heap_time_total = duration_cast<milliseconds>(heap_time_stop - heap_time_start);
+                auto heap_time_total = duration_cast<microseconds>(heap_time_stop - heap_time_start);
 
                 cout << "Ejecutando dijkstra con Colas de Fibonacci..." << endl;
                 auto fibheap_time_start = high_resolution_clock::now();
                 auto fibheap_result = dijkstra<fibheap>(g, 0);
                 auto fibheap_time_stop = high_resolution_clock::now();
-                auto fibheap_time_total = duration_cast<milliseconds>(fibheap_time_stop - fibheap_time_start);
+                auto fibheap_time_total = duration_cast<microseconds>(fibheap_time_stop - fibheap_time_start);
 
-                cout << "Tiempo que tardó con Heap: " << heap_time_total.count() << " milisegundos" << endl;
-                cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time_total.count() << " milisegundos" << endl;
+                cout << "Tiempo que tardó con Heap: " << heap_time_total.count() << "μs" << endl;
+                cout << "Tiempo que tardó con Colas de Fibonacci: " << fibheap_time_total.count() << "μs" << endl;
 
                 // Escribir los resultados en el archivo de salida
                 outfile << v << ", " << e << ", " << heap_time_total.count() << ", " << "fibheap_time_total.count()" << std::endl;
