@@ -112,7 +112,7 @@ struct fibheap {
     int n = 0;                            // declare an integer for number of nodes in the heap
     unordered_map<int, node *> node_map;  // map to keep pointers associated to node numbers
 
-   public:
+   private:
     /* inserts element e creating a node x with that key */
     void insert(element e) {
         struct node *x = new node();
